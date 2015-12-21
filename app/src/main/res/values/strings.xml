@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Zcode</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="scanning_hint">请保持合适距离进行扫描</string>
+</resources>
