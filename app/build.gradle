@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
-
+//apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
 android {
     signingConfigs {
         config {
@@ -15,8 +17,8 @@ android {
         applicationId "com.ccn.zxing.zcode"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 3
+        versionName version
         signingConfig signingConfigs.config
     }
     buildTypes {
@@ -33,4 +35,115 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.jakewharton:butterknife:5.1.1'
+}
+//def isSnapshot = version.endsWith('-SNAPSHOT')
+//def sonatypeRepositoryUrl
+//if(isSnapshot) {
+//    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots-snapshots"
+//} else {
+//    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+//}
+//
+//sourceSets {
+//    main {
+//        java {
+//            srcDir 'src/main/java'
+//        }
+//    }
+//}
+//
+//task sourcesJar(type: Jar) {
+//    from sourceSets.main.allSource
+//    classifier = 'sources'
+//}
+//
+//artifacts {
+//    //archives javadocJar
+//    archives sourcesJar
+//}
+//
+//signing {
+//    if(project.hasProperty('signing.keyId') && project.hasProperty('signing.password') &&
+//            project.hasProperty('signing.secretKeyRingFile')) {
+//        sign configurations.archives
+//    } else {
+//        println "Signing information missing/incomplete for ${project.name}"
+//    }
+//}
+//定义GroupID和Version，ArtefactID会自动使用Project名
+group = 'com.github.nicccccccccce'
+version = '1.0.0'
+
+repositories {
+    mavenCentral();
+}
+
+artifacts {
+    archives file('ZxingscannerForAndroid.aar')
+}
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+//            if(project.hasProperty('preferedRepo') && project.hasProperty('preferedUsername')
+//                    && project.hasProperty('preferedPassword')) {
+//
+//                configuration = configurations.archives
+//                repository(url: preferedRepo) {
+//
+//                    authentication(userName: preferedUsername, password: preferedPassword)
+//                }
+//
+//            } else if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+//
+//                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//                repository(url: sonatypeRepositoryUrl) {
+//                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+//
+//                }
+//            } else {
+//                println "Settings sonatypeUsername/sonatypePassword missing/incomplete for ${project.name}"
+//            }
+            //为Pom文件做数字签名
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+//            pom.artifactId = artifactId
+            pom.project {
+                name project.name
+                packaging 'aar'
+                url 'https://github.com/nicccccccccce/ZxingScanner'
+
+                scm {
+                    url 'scm:git@github.com:github.com/nicccccccccce.git'
+                    connection 'scm:git@github.com:github.com/nicccccccccce.git'
+                    developerConnection 'git@github.com:github.com/nicccccccccce.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'ZXingScannner'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'nicccccccccce'
+                        name 'nicccccccccce'
+                    }
+                }
+            }
+        }
+    }
 }
