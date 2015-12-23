@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 //定义GroupID和Version，ArtefactID会自动使用Project名
 group = 'com.github.nicccccccccce.zxing'
-version = '1.0.0'
+version = '1.0.1'
 android {
     signingConfigs {
         config {
@@ -91,9 +91,9 @@ uploadArchives {
                 url 'https://github.com/nicccccccccce/ZxingScanner'
 
                 scm {
-                    url 'scm:git@github.com:github.com/nicccccccccce.git'
-                    connection 'scm:git@github.com:github.com/nicccccccccce.git'
-                    developerConnection 'git@github.com:github.com/nicccccccccce.git'
+                    url 'scm:git@github.com:github.com/nicccccccccce/ZxingScanner.git'
+                    connection 'scm:git@github.com:github.com/nicccccccccce/ZxingScanner.git'
+                    developerConnection 'git@github.com:github.com/nicccccccccce/ZxingScanner.git'
                 }
 
                 licenses {
