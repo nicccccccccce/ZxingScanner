@@ -20,7 +20,7 @@ android {
         applicationId "com.ccn.zxing.zcode"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 4
+        versionCode 5
         versionName version
         signingConfig signingConfigs.config
     }
@@ -36,8 +36,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.0.0'
-    compile 'com.jakewharton:butterknife:5.1.1'
 }
 def isSnapshot = version.endsWith('-SNAPSHOT')
 def sonatypeRepositoryUrl
@@ -61,7 +59,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    //archives javadocJar
+//    archives javadocJar
     archives sourcesJar
 }
 
@@ -71,7 +69,24 @@ signing {
 repositories {
     mavenCentral();
 }
+//依赖编译，然后打包JAR
+task taskJar(type: Jar, dependsOn: compileJava) {
+    from 'build/classes'
+    destinationDir = file('build/libs')
+}
 
+//清除上次的编译过的文件
+task clearPj(type: Delete) {
+    delete 'build', 'target'
+}
+
+//把JAR复制到目标目录
+task release(type: Copy, dependsOn: [clearPj, taskJar]) {
+    from('build/libs') {
+        include '*.jar'
+    }
+    into('target')
+}
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -84,9 +99,10 @@ uploadArchives {
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
             }
+            pom.artifactId = POM_ARTIFACT_ID
             pom.project {
                 name project.name
-                packaging 'aar'
+                packaging 'jar'
                 description 'Android zxing'
                 url 'https://github.com/nicccccccccce/ZxingScanner'
 
