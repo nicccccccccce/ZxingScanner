@@ -1,28 +1,17 @@
-apply plugin: 'com.android.application'
-//apply plugin: 'com.android.library'
+apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
-//定义GroupID和Version，ArtefactID会自动使用Project名
-group = 'com.github.nicccccccccce.zxing'
-version = '1.0.1'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 android {
-    signingConfigs {
-        config {
-            keyAlias 'cn'
-            keyPassword 'asdf&1234'
-            storeFile file('J:/AndroidStudioProjects/android-default.jks')
-            storePassword 'asdf&1234'
-        }
-    }
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
+
     defaultConfig {
-        applicationId "com.ccn.zxing.zcode"
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 5
-        versionName version
-        signingConfig signingConfigs.config
+        versionCode 7
+        versionName properties.getProperty("VERSION_NAME")
     }
     buildTypes {
         release {
@@ -30,12 +19,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    productFlavors {
-    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 def isSnapshot = version.endsWith('-SNAPSHOT')
 def sonatypeRepositoryUrl
@@ -59,7 +46,6 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-//    archives javadocJar
     archives sourcesJar
 }
 
@@ -69,24 +55,7 @@ signing {
 repositories {
     mavenCentral();
 }
-//依赖编译，然后打包JAR
-task taskJar(type: Jar, dependsOn: compileJava) {
-    from 'build/classes'
-    destinationDir = file('build/libs')
-}
 
-//清除上次的编译过的文件
-task clearPj(type: Delete) {
-    delete 'build', 'target'
-}
-
-//把JAR复制到目标目录
-task release(type: Copy, dependsOn: [clearPj, taskJar]) {
-    from('build/libs') {
-        include '*.jar'
-    }
-    into('target')
-}
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -94,35 +63,37 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
             //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: properties.getProperty("ossrhUsername"), password: properties.getProperty("ossrhPassword"))
             }
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: properties.getProperty("ossrhUsername"), password: properties.getProperty("ossrhPassword"))
             }
-            pom.artifactId = POM_ARTIFACT_ID
+            pom.groupId = properties.getProperty("POM_GROUPID")
+            pom.artifactId = properties.getProperty("POM_ARTIFACTID")
+            pom.version = properties.getProperty("VERSION_NAME")
             pom.project {
                 name project.name
-                packaging 'jar'
-                description 'Android zxing'
-                url 'https://github.com/nicccccccccce/ZxingScanner'
+                packaging properties.getProperty("POM_PROJECT_PACKAING")
+                description properties.getProperty("POM_PROJECT_DESCRIPTION")
+                url properties.getProperty("gitURL")
 
                 scm {
-                    url 'scm:git@github.com:github.com/nicccccccccce/ZxingScanner.git'
-                    connection 'scm:git@github.com:github.com/nicccccccccce/ZxingScanner.git'
-                    developerConnection 'git@github.com:github.com/nicccccccccce/ZxingScanner.git'
+                    url properties.getProperty("scmURL")
+                    connection properties.getProperty("scmURL")
+                    developerConnection properties.getProperty("scmDevURL")
                 }
 
                 licenses {
                     license {
                         name 'The Apache Software License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
+                        distribution properties.getProperty("POM_LICENCE_DIST")
                     }
                 }
                 developers {
                     developer {
-                        id 'nicccccccccce'
-                        name 'nicccccccccce'
+                        id properties.getProperty("DEVELOPER_ID")
+                        name properties.getProperty("DEVELOPER_NAME")
                     }
                 }
             }

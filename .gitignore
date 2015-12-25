@@ -3,6 +3,7 @@
 /.idea/workspace.xml
 /.idea/libraries
 /gradle.properties
+/zxingscanner/zxingscanner.iml
 .DS_Store
 /build
 /captures
