@@ -16,3 +16,5 @@ if (resultCode == 1001) {
           String scanResult = bundle.getString("ercode");
 >
     }
+>
+<img src="https://github.com/nicccccccccce/documents/blob/master/android-zxing.gif" height="50%" width="50%" />
