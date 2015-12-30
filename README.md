@@ -1,5 +1,6 @@
-扫码
+#扫码
 =====
+###dependencies 中引用compile 'com.github.nicccccccccce.zxing:ZxingLib:1.0.4'
 >
 ##调用
 >
